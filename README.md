@@ -10,3 +10,14 @@ An example application built with dart_frog
 [license_link]: https://opensource.org/licenses/MIT
 [very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
 [very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
+
+
+Running in GCloud here: https://lobby-ic4hp354na-ew.a.run.app
+
+For update deployments:
+
+```sh
+ dart pub get
+ dart_frog build
+ gcloud run deploy lobby   --source build   --project=united-kiln-407618   --region=europe-west1   --allow-unauthenticated
+```
