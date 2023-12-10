@@ -11,9 +11,9 @@ import '../../main.dart';
 Future<Response> onRequest(RequestContext context) async {
   try {
     final data = await context.request.body();
-    final map = jsonDecode(data) as Map<String, dynamic>;
+    final map = jsonDecode(data) as Map<String, Object?>;
     final lobby = Lobby.fromJson(map);
-    final jsonString = storage.get<Map<String, dynamic>?>(lobby.id);
+    final jsonString = storage.get<Map<String, Object?>?>(lobby.id);
     if (jsonString != null) {
       var actualLobby = Lobby.fromJson(jsonString);
       if (actualLobby.playerTwo == null) {
