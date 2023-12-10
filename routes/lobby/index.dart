@@ -1,10 +1,10 @@
-// ignore_for_file: avoid_dynamic_calls
+// ignore_for_file: avoid_dynamic_calls, avoid_slow_async_io
 
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
-import 'package:mobilecurling_lobby/class/lobby/lobby.dart';
+import 'package:mobilecurling_lobby/core/shared_classes/lobby/lobby.dart';
 
 import '../../main.dart';
 
