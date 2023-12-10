@@ -15,7 +15,7 @@ Future<Response> onRequest(RequestContext context) async {
     final lobby = Lobby.fromJson(map);
     final jsonString = storage.get<Map<String, Object?>?>(lobby.id);
     if (jsonString != null) {
-      var actualLobby = Lobby.fromJson(jsonString);
+      var actualLobby = Lobby.fromJson(jsonDecode(jsonEncode(jsonString)) as Map<String, Object?>);
       if (actualLobby.playerTwo == null) {
         actualLobby = actualLobby.copyWith(playerTwo: lobby.playerTwo);
         storage.set(lobby.id, actualLobby.toJson());
