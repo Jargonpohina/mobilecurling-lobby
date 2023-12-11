@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mobilecurling_lobby/core/shared_classes/lobby/lobby.dart';
+import 'package:mobilecurling_lobby/core/validate.dart';
 
 import '../../main.dart';
 
@@ -13,15 +14,19 @@ Future<Response> onRequest(RequestContext context) async {
     final data = await context.request.body();
     final map = jsonDecode(data) as Map<String, Object?>;
     final lobby = Lobby.fromJson(map);
-    final jsonString = storage.get<Map<String, Object?>?>(lobby.id);
-    if (jsonString != null) {
-      var actualLobby = Lobby.fromJson(jsonDecode(jsonEncode(jsonString)) as Map<String, Object?>);
-      if (actualLobby.playerTwo == null) {
-        actualLobby = actualLobby.copyWith(playerTwo: lobby.playerTwo);
-        storage.set(lobby.id, actualLobby.toJson());
-        return Response(body: jsonEncode(actualLobby.toJson()));
+    if (await validate(lobby.playerTwo!)) {
+      final jsonString = storage.get<Map<String, Object?>?>(lobby.id);
+      if (jsonString != null) {
+        var actualLobby = Lobby.fromJson(jsonDecode(jsonEncode(jsonString)) as Map<String, Object?>);
+        if (actualLobby.playerTwo == null) {
+          actualLobby = actualLobby.copyWith(playerTwo: lobby.playerTwo);
+          storage.set(lobby.id, actualLobby.toJson());
+          return Response(body: jsonEncode(actualLobby.toJson()));
+        }
+        return Response(statusCode: HttpStatus.internalServerError, body: 'Game is full.');
       }
-      return Response(statusCode: HttpStatus.internalServerError, body: 'Game is full.');
+    } else {
+      return Response(statusCode: HttpStatus.internalServerError, body: 'Could not validate user.');
     }
     return Response(statusCode: HttpStatus.internalServerError, body: 'Failed to join lobby.');
   } catch (e, s) {

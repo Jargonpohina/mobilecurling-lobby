@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mobilecurling_lobby/core/shared_classes/lobby/lobby.dart';
+import 'package:mobilecurling_lobby/core/validate.dart';
 
 import '../../main.dart';
 
@@ -22,21 +23,15 @@ Future<Response> onRequest(RequestContext context) async {
       }
     }
   }
-
   if (context.request.method == HttpMethod.post) {
     final data = await context.request.body();
     final map = jsonDecode(data) as Map<String, dynamic>;
     final lobby = Lobby.fromJson(map);
-    final savedLobby = lobby.copyWith(createdAt: DateTime.now()).toJson();
-    storage.set(lobby.id, savedLobby);
-    return Response(body: jsonEncode(savedLobby));
-  }
-  if (context.request.method == HttpMethod.delete) {
-    final data = await context.request.body();
-    final map = jsonDecode(data) as Map<String, dynamic>;
-    final lobby = Lobby.fromJson(map);
-    storage.remove(lobby.id);
-    return Response(body: 'Deleted lobby');
+    if (await validate(lobby.playerOne)) {
+      final savedLobby = lobby.copyWith(createdAt: DateTime.now()).toJson();
+      storage.set(lobby.id, savedLobby);
+      return Response(body: jsonEncode(savedLobby));
+    }
   }
   if (context.request.method == HttpMethod.get) {
     final file = File('./lobbies.json');

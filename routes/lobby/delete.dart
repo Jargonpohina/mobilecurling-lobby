@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mobilecurling_lobby/core/shared_classes/lobby/lobby.dart';
+import 'package:mobilecurling_lobby/core/validate.dart';
 
 import '../../main.dart';
 
@@ -13,9 +14,11 @@ Future<Response> onRequest(RequestContext context) async {
     final data = await context.request.body();
     final map = jsonDecode(data) as Map<String, Object?>;
     final lobby = Lobby.fromJson(map);
-    if (storage.get<dynamic>(lobby.id) != null) {
-      storage.remove(lobby.id);
-      return Response(body: 'Deleted the lobby succesfully.');
+    if (await validate(lobby.playerOne)) {
+      if (storage.get<dynamic>(lobby.id) != null) {
+        storage.remove(lobby.id);
+        return Response(body: 'Deleted the lobby succesfully.');
+      }
     }
     return Response(statusCode: HttpStatus.internalServerError, body: 'Lobby doesn\'t exist.');
   } catch (e, s) {
