@@ -7,10 +7,12 @@ Future<bool> validate(User user) async {
   try {
     await dio.post(
       '$authServerUrl/validate',
-      data: user,
+      data: user.toJson(),
     );
     return true;
-  } catch (e) {
+  } catch (e, s) {
+    print(e);
+    print(s);
     return false;
   }
 }
