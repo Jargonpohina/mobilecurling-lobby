@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mobilecurling_lobby/core/shared_classes/lobby/lobby.dart';
+import 'package:mobilecurling_lobby/core/shared_classes/message/message.dart';
 import 'package:mobilecurling_lobby/core/utils.dart';
 import 'package:mobilecurling_lobby/core/validate.dart';
 
@@ -35,7 +36,7 @@ Future<Response> onRequest(RequestContext context) async {
         // Create a game
         await dio.post(
           '$gameServerAPIUrl/create',
-          data: savedLobby,
+          data: Message(type: MessageType.join, user: lobby.playerOne, lobby: lobby).toJson(),
         );
         return Response(body: jsonEncode(savedLobby));
       }
