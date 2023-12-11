@@ -39,7 +39,9 @@ Future<Response> onRequest(RequestContext context) async {
         );
         return Response(body: jsonEncode(savedLobby));
       }
-    } catch (e) {
+    } catch (e, s) {
+      print(e);
+      print(s);
       return Response(statusCode: HttpStatus.internalServerError, body: 'Unknown failure.');
     }
   }
