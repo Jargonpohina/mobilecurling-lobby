@@ -1,10 +1,11 @@
-// ignore_for_file: avoid_dynamic_calls, avoid_slow_async_io, lines_longer_than_80_chars
+// ignore_for_file: avoid_dynamic_calls, avoid_slow_async_io, lines_longer_than_80_chars, inference_failure_on_function_invocation
 
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:mobilecurling_lobby/core/shared_classes/lobby/lobby.dart';
+import 'package:mobilecurling_lobby/core/utils.dart';
 import 'package:mobilecurling_lobby/core/validate.dart';
 
 import '../../main.dart';
@@ -24,13 +25,22 @@ Future<Response> onRequest(RequestContext context) async {
     }
   }
   if (context.request.method == HttpMethod.post) {
-    final data = await context.request.body();
-    final map = jsonDecode(data) as Map<String, dynamic>;
-    final lobby = Lobby.fromJson(map);
-    if (await validate(lobby.playerOne)) {
-      final savedLobby = lobby.copyWith(createdAt: DateTime.now()).toJson();
-      storage.set(lobby.id, savedLobby);
-      return Response(body: jsonEncode(savedLobby));
+    try {
+      final data = await context.request.body();
+      final map = jsonDecode(data) as Map<String, dynamic>;
+      final lobby = Lobby.fromJson(map);
+      if (await validate(lobby.playerOne)) {
+        final savedLobby = lobby.copyWith(createdAt: DateTime.now()).toJson();
+        storage.set(lobby.id, savedLobby);
+        // Create a game
+        await dio.post(
+          '$gameServerAPIUrl/create',
+          data: savedLobby,
+        );
+        return Response(body: jsonEncode(savedLobby));
+      }
+    } catch (e) {
+      return Response(statusCode: HttpStatus.internalServerError, body: 'Unknown failure.');
     }
   }
   if (context.request.method == HttpMethod.get) {
