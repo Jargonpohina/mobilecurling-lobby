@@ -44,5 +44,5 @@ To start the dev server (default port 8080):
 Build for production:
 
 ```sh
-~/mobilecurling-lobby $ dart_frog build
+~/mobilecurling-lobby$ dart_frog build
 ```
